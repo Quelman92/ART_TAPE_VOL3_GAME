@@ -144,6 +144,7 @@ export class TitleScene extends Phaser.Scene {
         this.setSelection(i);
       });
       text.on('pointerdown', () => {
+        this.setSelection(i);
         this.activate(i);
       });
 
