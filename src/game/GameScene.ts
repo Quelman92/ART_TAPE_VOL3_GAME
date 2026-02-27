@@ -1234,9 +1234,16 @@ export class GameScene extends Phaser.Scene {
 
   /** Hard drop: instantly drop piece to bottom (Tetris-style, triggered by holding down) */
   private hardDrop(): void {
-    if (!this.piece) return;
-    while (this.piece) {
-      this.tryStepDownOnce();
+    if (!this.piece || this.gameOver || this.levelComplete || this.paused || this.tapToStartOverlay) return;
+    try {
+      let iterations = 0;
+      const maxIterations = GRID_ROWS + 5;
+      while (this.piece && iterations < maxIterations) {
+        this.tryStepDownOnce();
+        iterations++;
+      }
+    } catch (_e) {
+      // Prevent any error from crashing the game
     }
   }
 

@@ -88,11 +88,21 @@ export class InputController {
         .setDisplaySize(btnW, btnH)
         .setScrollFactor(0)
         .setDepth(11);
-      rect.on('pointerdown', () => {
+      rect.on('pointerdown', (ptr: Phaser.Input.Pointer) => {
+        if (ptr.event) {
+          ptr.event.preventDefault();
+          ptr.event.stopPropagation();
+        }
         touchActiveRef.value = true;
         onPress();
       });
-      rect.on('pointerup', () => { touchActiveRef.value = false; });
+      rect.on('pointerup', (ptr: Phaser.Input.Pointer) => {
+        if (ptr.event) {
+          ptr.event.preventDefault();
+          ptr.event.stopPropagation();
+        }
+        touchActiveRef.value = false;
+      });
       rect.on('pointerout', () => { touchActiveRef.value = false; });
       rect.on('destroy', () => icon.destroy());
       return { rect, icon };
@@ -131,21 +141,39 @@ export class InputController {
       .setDisplaySize(rotateBtnSize, rotateBtnSize)
       .setScrollFactor(0)
       .setDepth(11);
-    this.rotateBtn.on('pointerdown', () => {
+    this.rotateBtn.on('pointerdown', (ptr: Phaser.Input.Pointer) => {
+      if (ptr.event) {
+        ptr.event.preventDefault();
+        ptr.event.stopPropagation();
+      }
       this.rotateTouchActive = true;
       this.rotateRequested = true;
     });
-    this.rotateBtn.on('pointerup', () => { this.rotateTouchActive = false; });
+    this.rotateBtn.on('pointerup', (ptr: Phaser.Input.Pointer) => {
+      if (ptr.event) {
+        ptr.event.preventDefault();
+        ptr.event.stopPropagation();
+      }
+      this.rotateTouchActive = false;
+    });
     this.rotateBtn.on('pointerout', () => { this.rotateTouchActive = false; });
     this.rotateBtn.on('destroy', () => this.rotateBtnIcon.destroy());
   }
 
   private setupDownButtonHold(): void {
-    this.downBtn.on('pointerdown', () => {
+    this.downBtn.on('pointerdown', (ptr: Phaser.Input.Pointer) => {
+      if (ptr.event) {
+        ptr.event.preventDefault();
+        ptr.event.stopPropagation();
+      }
       this.downHoldStartMs = this.scene.game.getTime();
       this.downHoldTriggered = false;
     });
-    this.downBtn.on('pointerup', () => {
+    this.downBtn.on('pointerup', (ptr: Phaser.Input.Pointer) => {
+      if (ptr.event) {
+        ptr.event.preventDefault();
+        ptr.event.stopPropagation();
+      }
       this.downHoldTriggered = false;
     });
     this.downBtn.on('pointerout', () => {
