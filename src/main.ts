@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { BootScene } from './game/BootScene';
 import { PretitleScene } from './game/PretitleScene';
 import { TitleScene } from './game/TitleScene';
+import { LoadingScene } from './game/LoadingScene';
 import { GameScene } from './game/GameScene';
 import { OptionsScene } from './game/OptionsScene';
 import { StoryModeTrackSelectScene } from './game/StoryModeTrackSelectScene';
@@ -24,7 +25,7 @@ const config: Phaser.Types.Core.GameConfig = {
   physics: {
     default: 'arcade'
   },
-  scene: [BootScene, PretitleScene, TitleScene, StoryModeTrackSelectScene, GameScene, OptionsScene]
+  scene: [BootScene, PretitleScene, TitleScene, StoryModeTrackSelectScene, LoadingScene, GameScene, OptionsScene]
 };
 
 const game = new Phaser.Game(config);

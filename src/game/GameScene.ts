@@ -134,43 +134,7 @@ export class GameScene extends Phaser.Scene {
   private static readonly ARCADE_STAGE_BG_KEYS = ['arcadeStage1', 'arcadeStage2', 'arcadeStage3', 'arcadeStage4'];
 
   preload(): void {
-    const b = ASSET_BASE;
-    for (let i = 1; i <= 10; i++) {
-      this.load.image(`stage${i}`, `${b}assets/longbg/stage${i}.JPG`);
-    }
-    this.load.image('arcadeStage1', `${b}assets/longbg/IMG_4462.JPG`);
-    this.load.image('arcadeStage2', `${b}assets/longbg/IMG_4544.JPG`);
-    this.load.image('arcadeStage3', `${b}assets/longbg/IMG_4547.JPG`);
-    this.load.image('arcadeStage4', `${b}assets/longbg/IMG_4548.JPG`);
-    for (const key of ARCADE_BG_KEYS) {
-      const file = key === 'IMG_4567_2' ? 'IMG_4567 2.JPG' : `${key}.JPG`;
-      this.load.image(key, `${b}assets/backgrounds/${file}`);
-    }
-    this.load.video(TRACK1_VIDEO_KEY, `${b}assets/backgrounds/track1/touched.mp4`, true);
-    for (let t = 1; t <= 9; t++) {
-      const files = TRACK_BG_FILES[t];
-      const folder = `track${t}`;
-      for (const f of files) {
-        this.load.image(`track${t}_${f}`, `${b}assets/backgrounds/${folder}/${f}.JPG`);
-      }
-    }
-    this.load.image('arrowLeft', `${b}assets/arrows/left.jpg`);
-    this.load.image('arrowRight', `${b}assets/arrows/right.jpg`);
-    this.load.image('arrowDown', `${b}assets/arrows/down.jpg`);
-    this.load.image('arrowAction', `${b}assets/arrows/action.PNG`);
-    this.load.audio('combo1', `${b}assets/arttapev3/combo/COMBO1.WAV`);
-    this.load.audio('combo2', `${b}assets/arttapev3/combo/COMBO2.WAV`);
-    this.load.audio('combo3', `${b}assets/arttapev3/combo/COMBO3.WAV`);
-    this.load.audio('combo4', `${b}assets/arttapev3/combo/COMBO4.WAV`);
-    this.load.audio('arcade0', `${b}assets/arttapev3/arcade/arcade.WAV`);
-    this.load.audio('arcade1', `${b}assets/arttapev3/arcade/arcade1.WAV`);
-    this.load.audio('arcade2', `${b}assets/arttapev3/arcade/arcade2.WAV`);
-    this.load.audio('arcade3', `${b}assets/arttapev3/arcade/arcade3.WAV`);
-    this.load.audio('arcade4', `${b}assets/arttapev3/arcade/arcade4.WAV`);
-    this.load.audio('arcade5', `${b}assets/arttapev3/arcade/arcade5.WAV`);
-    this.load.audio('arcade6', `${b}assets/arttapev3/arcade/arcade6.WAV`);
-    this.load.audio('arcade7', `${b}assets/arttapev3/arcade/EXPlus.WAV`);
-    this.load.audio('arcade8', `${b}assets/arttapev3/arcade/MTHEME.WAV`);
+    // Assets are loaded by LoadingScene - this stays empty
   }
 
   create(): void {

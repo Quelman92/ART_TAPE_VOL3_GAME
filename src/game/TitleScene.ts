@@ -236,7 +236,7 @@ export class TitleScene extends Phaser.Scene {
       index === 0
         ? 'StoryModeTrackSelectScene'
         : index === 1
-          ? 'ArcadeModeScene'
+          ? 'LoadingScene'
           : 'OptionsScene';
 
     if (this.titleBgm) {
@@ -244,10 +244,14 @@ export class TitleScene extends Phaser.Scene {
       this.titleBgm = null;
     }
 
-    const fadeMs = key === 'ArcadeModeScene' ? 1000 : 500;
+    const fadeMs = 500;
     this.cameras.main.fadeOut(fadeMs, 0, 0, 0);
     this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
-      this.scene.start(key);
+      if (key === 'LoadingScene') {
+        this.scene.start('LoadingScene', {});
+      } else {
+        this.scene.start(key);
+      }
     });
   }
 

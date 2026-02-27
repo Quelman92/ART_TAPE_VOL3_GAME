@@ -160,9 +160,9 @@ export class StoryModeTrackSelectScene extends Phaser.Scene {
     const tracklist = this.tracklist;
     this.input.enabled = false;
     this.menuTexts.forEach((t) => t.removeAllListeners());
-    this.cameras.main.fadeOut(1000, 0, 0, 0);
+    this.cameras.main.fadeOut(500, 0, 0, 0);
     this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
-      this.scene.start('ArcadeModeScene', { track, tracklist });
+      this.scene.start('LoadingScene', { track, tracklist });
     });
   }
 
