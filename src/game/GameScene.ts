@@ -249,7 +249,8 @@ export class GameScene extends Phaser.Scene {
 
     this.graphics = this.add.graphics();
     this.inputController = new InputController(this, {
-      onDownStep: () => this.tryStepDownOnce()
+      onDownStep: () => this.tryStepDownOnce(),
+      onDownHold: () => this.hardDrop()
     });
 
     const kbd = this.input.keyboard;
@@ -1229,6 +1230,14 @@ export class GameScene extends Phaser.Scene {
       return;
     }
     this.lockPiece();
+  }
+
+  /** Hard drop: instantly drop piece to bottom (Tetris-style, triggered by holding down) */
+  private hardDrop(): void {
+    if (!this.piece) return;
+    while (this.piece) {
+      this.tryStepDownOnce();
+    }
   }
 
   /**

@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 
 export interface InputControllerOptions {
   onDownStep?: () => void;
+  onDownHold?: () => void;
 }
 
 const BTN_FILL_NORMAL = 0x333344;
@@ -10,6 +11,9 @@ const BTN_STROKE_NORMAL = 0xffffff;
 const BTN_STROKE_ACTIVE = 0xaaccff;
 const ICON_TINT_ACTIVE = 0xaaccff;
 const ICON_TINT_NORMAL = 0xffffff;
+
+/** Hold down button for this many ms to trigger hard drop (Tetris-style) */
+const HOLD_TO_DROP_MS = 600;
 
 export class InputController {
   private cursors: Phaser.Types.Input.Keyboard.CursorKeys;
@@ -21,6 +25,14 @@ export class InputController {
   private rotateRequested = false;
 
   private onDownStep: (() => void) | undefined;
+  private onDownHold: (() => void) | undefined;
+
+  /** Touch/pointer active state (for mobile visual feedback) */
+  private rotateTouchActive = false;
+
+  /** Hold-to-drop: time down button has been held */
+  private downHoldStartMs = 0;
+  private downHoldTriggered = false;
 
   private leftBtn!: Phaser.GameObjects.Rectangle;
   private leftBtnIcon!: Phaser.GameObjects.Image;
@@ -31,11 +43,16 @@ export class InputController {
   private rotateBtn!: Phaser.GameObjects.Rectangle;
   private rotateBtnIcon!: Phaser.GameObjects.Image;
 
+  private leftTouchRef = { value: false };
+  private rightTouchRef = { value: false };
+  private downTouchRef = { value: false };
+
   constructor(
     private scene: Phaser.Scene,
     options: InputControllerOptions = {}
   ) {
     this.onDownStep = options.onDownStep;
+    this.onDownHold = options.onDownHold;
     this.cursors = scene.input.keyboard!.createCursorKeys();
     this.rotateKey = scene.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
     this.downKey = scene.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
@@ -47,7 +64,8 @@ export class InputController {
     const btnW = 72;
     const btnH = 68;
     const spacing = 80;
-    const downOffset = 44;
+    /** Down button offset - lower than left/right for controller-style layout */
+    const downOffset = 98;
     const dpadCenterX = width * 0.28;
     const bottomHalfCenterY = height * 0.75;
     const dpadCenterY = bottomHalfCenterY;
@@ -56,7 +74,8 @@ export class InputController {
       x: number,
       y: number,
       textureKey: string,
-      onPress: () => void
+      onPress: () => void,
+      touchActiveRef: { value: boolean }
     ): { rect: Phaser.GameObjects.Rectangle; icon: Phaser.GameObjects.Image } => {
       const rect = this.scene.add
         .rectangle(x, y, btnW, btnH, BTN_FILL_NORMAL, 0.85)
@@ -69,26 +88,32 @@ export class InputController {
         .setDisplaySize(btnW, btnH)
         .setScrollFactor(0)
         .setDepth(11);
-      rect.on('pointerdown', () => onPress());
+      rect.on('pointerdown', () => {
+        touchActiveRef.value = true;
+        onPress();
+      });
+      rect.on('pointerup', () => { touchActiveRef.value = false; });
+      rect.on('pointerout', () => { touchActiveRef.value = false; });
       rect.on('destroy', () => icon.destroy());
       return { rect, icon };
     };
 
     const left = makeDirButton(dpadCenterX - spacing, dpadCenterY, 'arrowLeft', () => {
       this.leftRequested = true;
-    });
+    }, this.leftTouchRef);
     this.leftBtn = left.rect;
     this.leftBtnIcon = left.icon;
 
     const down = makeDirButton(dpadCenterX, dpadCenterY + downOffset, 'arrowDown', () => {
       this.onDownStep?.();
-    });
+    }, this.downTouchRef);
     this.downBtn = down.rect;
     this.downBtnIcon = down.icon;
+    this.setupDownButtonHold();
 
     const right = makeDirButton(dpadCenterX + spacing, dpadCenterY, 'arrowRight', () => {
       this.rightRequested = true;
-    });
+    }, this.rightTouchRef);
     this.rightBtn = right.rect;
     this.rightBtnIcon = right.icon;
 
@@ -107,9 +132,25 @@ export class InputController {
       .setScrollFactor(0)
       .setDepth(11);
     this.rotateBtn.on('pointerdown', () => {
+      this.rotateTouchActive = true;
       this.rotateRequested = true;
     });
+    this.rotateBtn.on('pointerup', () => { this.rotateTouchActive = false; });
+    this.rotateBtn.on('pointerout', () => { this.rotateTouchActive = false; });
     this.rotateBtn.on('destroy', () => this.rotateBtnIcon.destroy());
+  }
+
+  private setupDownButtonHold(): void {
+    this.downBtn.on('pointerdown', () => {
+      this.downHoldStartMs = this.scene.game.getTime();
+      this.downHoldTriggered = false;
+    });
+    this.downBtn.on('pointerup', () => {
+      this.downHoldTriggered = false;
+    });
+    this.downBtn.on('pointerout', () => {
+      this.downHoldTriggered = false;
+    });
   }
 
   private setButtonHighlight(
@@ -135,11 +176,27 @@ export class InputController {
       this.rotateRequested = true;
     }
 
-    const leftActive = this.cursors.left?.isDown ?? false;
-    const rightActive = this.cursors.right?.isDown ?? false;
-    const downActive = this.downKey.isDown;
+    // Keyboard: set hold start time when down key first pressed
+    if (justDown(this.downKey)) {
+      this.downHoldStartMs = this.scene.game.getTime();
+      this.downHoldTriggered = false;
+    }
+
+    // Hold-to-drop: when down held for HOLD_TO_DROP_MS, trigger hard drop
+    if (this.downTouchRef.value || this.downKey.isDown) {
+      const heldMs = this.scene.game.getTime() - this.downHoldStartMs;
+      if (heldMs >= HOLD_TO_DROP_MS && !this.downHoldTriggered) {
+        this.downHoldTriggered = true;
+        this.onDownHold?.();
+      }
+    }
+
+    // Active = keyboard OR touch (for mobile visual feedback)
+    const leftActive = (this.cursors.left?.isDown ?? false) || this.leftTouchRef.value;
+    const rightActive = (this.cursors.right?.isDown ?? false) || this.rightTouchRef.value;
+    const downActive = this.downKey.isDown || this.downTouchRef.value;
     const rotateActive =
-      this.rotateKey.isDown || (this.cursors.up?.isDown ?? false);
+      this.rotateKey.isDown || (this.cursors.up?.isDown ?? false) || this.rotateTouchActive;
 
     this.setButtonHighlight(this.leftBtn, this.leftBtnIcon, leftActive);
     this.setButtonHighlight(this.downBtn, this.downBtnIcon, downActive);
