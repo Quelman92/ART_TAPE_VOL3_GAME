@@ -74,7 +74,7 @@ export class LoadingScene extends Phaser.Scene {
     const ARCADE_BG_KEYS = [
       'bg1', 'bg18', 'bg22', 'IMG_4549', 'IMG_4550', 'IMG_4551', 'IMG_4552', 'IMG_4553',
       'IMG_4554', 'IMG_4555', 'IMG_4557', 'IMG_4558', 'IMG_4559', 'IMG_4560', 'IMG_4561',
-      'IMG_4562', 'IMG_4563', 'IMG_4564', 'IMG_4565', 'IMG_4566', 'IMG_4567_2', 'IMG_4568',
+      'IMG_4562', 'IMG_4563', 'IMG_4564', 'IMG_4565', 'IMG_4566', 'IMG_4567', 'IMG_4568',
       'IMG_4569', 'IMG_4570', 'IMG_4571', 'IMG_4572', 'IMG_4573'
     ];
     const TRACK_BG_FILES: Record<number, string[]> = {
@@ -98,8 +98,7 @@ export class LoadingScene extends Phaser.Scene {
     this.load.image('arcadeStage3', `${b}assets/longbg/IMG_4547.JPG`);
     this.load.image('arcadeStage4', `${b}assets/longbg/IMG_4548.JPG`);
     for (const key of ARCADE_BG_KEYS) {
-      const file = key === 'IMG_4567_2' ? 'IMG_4567 2.JPG' : `${key}.JPG`;
-      this.load.image(key, `${b}assets/backgrounds/${file}`);
+      this.load.image(key, `${b}assets/backgrounds/${key}.JPG`);
     }
     this.load.video('track1_touched', `${b}assets/backgrounds/track1/touched.mp4`, true);
     for (let t = 1; t <= 9; t++) {

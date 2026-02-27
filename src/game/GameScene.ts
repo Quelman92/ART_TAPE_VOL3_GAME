@@ -59,7 +59,7 @@ const ARCADE_BG_KEYS = [
   'bg1', 'bg18', 'bg22',
   'IMG_4549', 'IMG_4550', 'IMG_4551', 'IMG_4552', 'IMG_4553', 'IMG_4554', 'IMG_4555', 'IMG_4557', 'IMG_4558',
   'IMG_4559', 'IMG_4560', 'IMG_4561', 'IMG_4562', 'IMG_4563', 'IMG_4564', 'IMG_4565', 'IMG_4566', 'IMG_4567',
-  'IMG_4567_2', 'IMG_4568', 'IMG_4569', 'IMG_4570', 'IMG_4571', 'IMG_4572', 'IMG_4573'
+  'IMG_4568', 'IMG_4569', 'IMG_4570', 'IMG_4571', 'IMG_4572', 'IMG_4573'
 ];
 
 export class GameScene extends Phaser.Scene {
